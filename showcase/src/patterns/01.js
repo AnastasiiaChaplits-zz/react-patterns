@@ -1,21 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './index.css';
 
+const initialState = {
+  count: 0,
+  countTotal: 2,
+  isClicked: false
+};
+
 const MediumClap = () => {
+  const MAXIMUM_USER_CLAP = 50;
+  const [clapState, setClapState] = useState(initialState);
+  const { count, countTotal, isClicked } = clapState;
+
+  const handleClapClick = () => {
+    setClapState((prevState) => ({
+      isClicked: true,
+      count: Math.min(count + 1, MAXIMUM_USER_CLAP),
+      countTotal:
+        count < MAXIMUM_USER_CLAP
+          ? prevState.countTotal + 1
+          : prevState.countTotal
+    }));
+  };
+
   return (
-    <button className={styles.clap}>
-      <ClapIcon />
-      <ClapCount />
-      <ClapTotal />
+    <button className={styles.clap} onClick={handleClapClick}>
+      <ClapIcon isClicked={isClicked} />
+      <ClapCount count={count} />
+      <ClapTotal countTotal={countTotal} />
     </button>
   );
 };
 
-const ClapIcon = () => {
+const ClapIcon = ({ isClicked }) => {
   return (
     <span>
       <svg
-        className={styles.icon}
+        className={`${styles.icon} ${isClicked && styles.checked}`}
         xmlns='http://www.w3.org/2000/svg'
         viewBox='-549 338 100.1 125'
       >
