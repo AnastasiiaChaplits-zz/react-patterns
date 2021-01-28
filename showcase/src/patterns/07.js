@@ -130,12 +130,16 @@ const useClapState = (initialState = INITIAL_STATE) => {
 
   // prop collection for 'click'
   const togglerProps = {
-    onClick: updateClapState
+    onClick: updateClapState,
+    'aria-pressed': clapState.isClicked
   };
 
   // props collection for 'count
   const counterProps = {
-    count
+    count,
+    'aria-valuemax': MAXIMUM_USER_CLAP,
+    'aria-valuemin': 0,
+    'aria-valuenow': count
   };
 
   return { clapState, updateClapState, togglerProps, counterProps };
