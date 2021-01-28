@@ -4,6 +4,7 @@ import React, {
   useCallback,
   createContext,
   useMemo,
+  useRef,
   useEffect,
   useContext
 } from 'react';
@@ -125,9 +126,13 @@ const MediumClap = ({ children, onClap }) => {
     clapTotalEl: clapTotalRef
   });
 
+  const componentJustMounted = useRef(true);
+
   useEffect(() => {
-    console.log('I have been invoked');
-    onClap && onClap(clapState);
+    if (!componentJustMounted.current) {
+      onClap && onClap(clapState);
+    }
+    componentJustMounted.current = false;
   }, [count]);
 
   const handleClapClick = () => {
