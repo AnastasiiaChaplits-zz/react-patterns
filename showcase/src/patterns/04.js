@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import mojs from 'mo-js';
 import styles from './index.css';
+import userCustomStyles from './usage.css';
 
 const initialState = {
   count: 0,
@@ -105,7 +106,7 @@ const useClapAnimation = ({ clapEl, countEl, clapTotalEl }) => {
 const MediumClapContext = createContext();
 const { Provider } = MediumClapContext;
 
-const MediumClap = ({ children, onClap, style: userStyles }) => {
+const MediumClap = ({ children, onClap, style: userStyles, className }) => {
   const MAXIMUM_USER_CLAP = 50;
   const [clapState, setClapState] = useState(initialState);
   const { count } = clapState;
@@ -155,12 +156,14 @@ const MediumClap = ({ children, onClap, style: userStyles }) => {
     [clapState, setRef]
   );
 
+  const classNames = [styles.clap, className].join(' ').trim();
+
   return (
     <Provider value={memoizedValue}>
       <button
         ref={setRef}
         data-refkey='clapRef'
-        className={styles.clap}
+        className={classNames}
         onClick={handleClapClick}
         style={userStyles}
       >
@@ -170,12 +173,16 @@ const MediumClap = ({ children, onClap, style: userStyles }) => {
   );
 };
 
-const ClapIcon = ({ style: userStyles = [] }) => {
+const ClapIcon = ({ style: userStyles = [], className }) => {
   const { isClicked } = useContext(MediumClapContext);
+
+  const classNames = [styles.icon, isClicked ? styles.checked : '', className]
+    .join(' ')
+    .trim();
   return (
     <span>
       <svg
-        className={`${styles.icon} ${isClicked && styles.checked}`}
+        className={classNames}
         xmlns='http://www.w3.org/2000/svg'
         viewBox='-549 338 100.1 125'
         style={userStyles}
@@ -187,13 +194,15 @@ const ClapIcon = ({ style: userStyles = [] }) => {
   );
 };
 
-const ClapCount = ({ style: userStyles = [] }) => {
+const ClapCount = ({ style: userStyles = [], className }) => {
   const { count, setRef } = useContext(MediumClapContext);
+
+  const classNames = [styles.count, className].join(' ').trim();
   return (
     <span
       style={userStyles}
       ref={setRef}
-      className={styles.count}
+      className={classNames}
       data-refkey='clapCountRef'
     >
       + {count}
@@ -201,13 +210,14 @@ const ClapCount = ({ style: userStyles = [] }) => {
   );
 };
 
-const ClapTotal = ({ style: userStyles = [] }) => {
+const ClapTotal = ({ style: userStyles = [], className }) => {
   const { countTotal, setRef } = useContext(MediumClapContext);
+  const classNames = [styles.total, className].join(' ').trim();
   return (
     <span
       style={userStyles}
       ref={setRef}
-      className={styles.total}
+      className={classNames}
       data-refkey='clapTotalRef'
     >
       {countTotal}
@@ -228,10 +238,10 @@ const Usage = () => {
 
   return (
     <div style={{ width: '100%' }}>
-      <MediumClap onClap={handleClap} style={{ border: '1px solid red' }}>
-        <MediumClap.Icon />
-        <MediumClap.Count />
-        <MediumClap.Total style={{ backgroundColor: 'black' }} />
+      <MediumClap onClap={handleClap} className={userCustomStyles.clap}>
+        <MediumClap.Icon className={userCustomStyles.icon} />
+        <MediumClap.Count className={userCustomStyles.count} />
+        <MediumClap.Total className={userCustomStyles.total} />
       </MediumClap>
       {!!count && (
         <div className={styles.info}>{`You have clapped ${count}`}</div>
