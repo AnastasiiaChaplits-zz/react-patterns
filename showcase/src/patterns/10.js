@@ -191,6 +191,11 @@ const useClapState = (
   };
 };
 
+useClapState.reducer = internalReducer;
+useClapState.types = {
+  clap: 'clap',
+  reset: 'reset'
+};
 // Custom useEffectAfterMount hook
 const useEffectAfterMount = (cb, deps) => {
   const componentJustMounted = useRef(true);
@@ -258,19 +263,14 @@ const userInitialState = {
 };
 
 const Usage = () => {
-  const reducer = ({ count, countTotal }, { type, payload }) => {
-    switch (type) {
-      case 'clap':
-        return {
-          isClicked: true,
-          count: Math.min(count + 1, MAXIMUM_USER_CLAP),
-          countTotal: count < MAXIMUM_USER_CLAP ? countTotal + 1 : countTotal
-        };
-      case 'reset':
-        return payload;
-      default:
-        break;
+  const [timesClapped, setTimeClapped] = useState(0);
+  const isClappedTooMuch = timesClapped >= 7; // true/false
+
+  const reducer = (state, action) => {
+    if (action.type === useClapState.types.clap && isClappedTooMuch) {
+      return state;
     }
+    return useClapState.reducer(state, action);
   };
 
   const {
@@ -298,6 +298,7 @@ const Usage = () => {
   const [uploadingReset, setUpload] = useState(false);
   useEffectAfterMount(() => {
     setUpload(true);
+    setTimeClapped(0);
 
     const id = setTimeout(() => {
       setUpload(false);
@@ -307,7 +308,7 @@ const Usage = () => {
   }, [resetDep]);
 
   const handleClick = () => {
-    console.log('CLICKED');
+    setTimeClapped((t) => t + 1);
   };
 
   return (
@@ -337,10 +338,15 @@ const Usage = () => {
           reset
         </button>
         <pre className={userStyles.resetMsg}>
-          {JSON.stringify({ count, countTotal, isClicked })}
+          {JSON.stringify({ timesClapped, count, countTotal })}
         </pre>
         <pre className={userStyles.resetMsg}>
           {uploadingReset ? `uploading reset ${resetDep} ...` : ''}
+        </pre>
+        <pre style={{ color: 'red' }}>
+          {isClappedTooMuch
+            ? 'You have clapped too much. don`t be so generous'
+            : ''}
         </pre>
       </section>
     </div>
