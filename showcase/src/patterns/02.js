@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect, useCallback } from 'react';
+import React, { useState, useLayoutEffect, useCallback } from 'react';
 import mojs from 'mo-js';
 import styles from './index.css';
 
@@ -14,7 +14,7 @@ const useClapAnimation = ({ clapEl, countEl, clapTotalEl }) => {
     () => new mojs.Timeline()
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!clapEl || !countEl || !clapTotalEl) {
       return;
     }
