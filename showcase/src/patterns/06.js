@@ -1,4 +1,10 @@
-import React, { useState, useLayoutEffect, useCallback } from 'react';
+import React, {
+  useState,
+  useLayoutEffect,
+  useCallback,
+  useRef,
+  useEffect
+} from 'react';
 import mojs from 'mo-js';
 import styles from './index.css';
 
@@ -93,7 +99,7 @@ const useClapAnimation = ({ clapEl, countEl, clapTotalEl }) => {
   return animationTimeline;
 };
 
-//useDOMRef Hook
+// Custom useDOMRef Hook
 const useDOMRef = () => {
   const [DOMRef, setRefState] = useState({});
 
@@ -108,7 +114,7 @@ const useDOMRef = () => {
   return [DOMRef, setRef];
 };
 
-// custom hook for useClapState
+// Custom hook for useClapState
 const useClapState = (initialState = INITIAL_STATE) => {
   const MAXIMUM_USER_CLAP = 50;
   const [clapState, setClapState] = useState(initialState);
@@ -125,6 +131,18 @@ const useClapState = (initialState = INITIAL_STATE) => {
   return [clapState, updateClapState];
 };
 
+// Custom useEffectAfterMount hook
+const useEffectAfterMount = (cb, deps) => {
+  const componentJustMounted = useRef(true);
+  useEffect(() => {
+    if (!componentJustMounted.current) {
+      return cb();
+    }
+    componentJustMounted.current = false;
+    // eslint-disable-next line react-hooks/exhaustive-dev
+  }, deps);
+};
+
 const MediumClap = () => {
   const [clapState, updateClapState] = useClapState();
   const { count, countTotal, isClicked } = clapState;
@@ -137,17 +155,16 @@ const MediumClap = () => {
     clapTotalEl: clapTotalRef
   });
 
-  const handleClapClick = () => {
+  useEffectAfterMount(() => {
     animationTimeline.replay();
-    updateClapState();
-  };
+  }, [count]);
 
   return (
     <button
       ref={setRef}
       data-refkey='clapRef'
       className={styles.clap}
-      onClick={handleClapClick}
+      onClick={updateClapState}
     >
       <ClapIcon isClicked={isClicked} />
       <ClapCount count={count} setRef={setRef} />
