@@ -221,7 +221,9 @@ const Usage = () => {
         <MediumClap.Count />
         <MediumClap.Total />
       </MediumClap>
-      <div className={styles.info}>{`You have clapped ${count}`}</div>
+      {!!count && (
+        <div className={styles.info}>{`You have clapped ${count}`}</div>
+      )}
     </div>
   );
 };
